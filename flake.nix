@@ -13,7 +13,7 @@
         pkgs = import nixpkgs { inherit system; };
 
         inputs = with pkgs;
-          [ rustc cargo glibcLocales ]
+          [ rustc cargo act glibcLocales ]
           ++ optional stdenv.isLinux [ inotify-tools ]
           ++ optional stdenv.isDarwin terminal-notifier
           ++ optionals stdenv.isDarwin
