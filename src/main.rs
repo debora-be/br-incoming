@@ -1,10 +1,12 @@
 mod tax_data;
+mod tax_calculator;
 
 use std::fs::File;
 use std::io::{self, BufReader, Write};
 use serde_json::from_reader;
 use clap::{Command, Arg};
 use tax_data::{TaxBrackets, UserInput};
+use tax_calculator::{calculate_tax_complete, calculate_tax_simplified};
 
 fn main() {
     let matches = Command::new("Brazilian Income Tax Calculator")
@@ -26,9 +28,11 @@ fn main() {
 }
 
 fn run_interactive() {
-    let annual_income = prompt_float("Enter your annual income: ");
-    let deductions = prompt_float("Enter your total deductions: ");
-    let tax_paid = prompt_float("Enter the total tax paid during the year: ");
+    println!("This program calculates your Brazilian Income Tax based on your annual income, total deductions, and total tax paid.");
+
+    let annual_income = prompt_float("Enter your annual income (e.g., 50000.00): ");
+    let deductions = prompt_float("Enter your total deductions (e.g., 2000.00): ");
+    let tax_paid = prompt_float("Enter the total tax paid during the year (e.g., 5000.00): ");
 
     let user_input = UserInput {
         annual_income,
@@ -78,38 +82,4 @@ fn prompt_float(prompt: &str) -> f64 {
             Err(_) => println!("Invalid input. Please enter a number."),
         }
     }
-}
-
-fn calculate_tax_complete(user_input: &UserInput, tax_brackets: &TaxBrackets) -> f64 {
-    let taxable_income = user_input.annual_income - user_input.deductions;
-    calculate_tax(taxable_income, &tax_brackets)
-}
-
-fn calculate_tax_simplified(user_input: &UserInput, tax_brackets: &TaxBrackets) -> f64 {
-    let max_deduction = 16754.34;
-    let simplified_deduction = (user_input.annual_income * 0.20).min(max_deduction);
-    let taxable_income = user_input.annual_income - simplified_deduction;
-    calculate_tax(taxable_income, &tax_brackets)
-}
-
-fn calculate_tax(taxable_income: f64, tax_brackets: &TaxBrackets) -> f64 {
-    let mut tax_due = 0.0;
-
-    for bracket in &tax_brackets.brackets {
-        if let Some(max_income) = bracket.max_income {
-            if taxable_income > bracket.min_income {
-                let income_in_bracket = (taxable_income - bracket.min_income).min(max_income - bracket.min_income);
-                tax_due += income_in_bracket * bracket.rate;
-                tax_due -= bracket.deduction;
-            }
-        } else {
-            if taxable_income > bracket.min_income {
-                let income_in_bracket = taxable_income - bracket.min_income;
-                tax_due += income_in_bracket * bracket.rate;
-                tax_due -= bracket.deduction;
-            }
-        }
-    }
-
-    tax_due
 }
