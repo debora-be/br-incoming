@@ -1,0 +1,25 @@
+# Ignore target directory (build artifacts)
+target
+
+# Ignore local configuration files
+*.rs.bk
+*.swp
+
+# Ignore any .git or version control directories
+.git
+.gitignore
+
+# Ignore Docker-related files
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Ignore OS-specific and editor-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore other temporary files and directories
+tmp
+temp
+*.tmp
+*.log
