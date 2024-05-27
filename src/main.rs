@@ -11,7 +11,7 @@ use tax_calculator::{calculate_tax_complete, calculate_tax_simplified};
 fn main() {
     let matches = Command::new("Brazilian Income Tax Calculator")
         .version("1.0")
-        .author("Your Name")
+        .author("de")
         .about("Calculates Brazilian Income Tax")
         .arg(Arg::new("interactive")
             .short('i')
