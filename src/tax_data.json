@@ -1,0 +1,10 @@
+{
+    "brackets": [
+      { "min_income": 0, "max_income": 27110.40, "rate": 0.0, "deduction": 0.0 },
+      { "min_income": 27110.41, "max_income": 33919.80, "rate": 0.075, "deduction": 2033.28 },
+      { "min_income": 33919.81, "max_income": 45012.60, "rate": 0.15, "deduction": 4577.27 },
+      { "min_income": 45012.61, "max_income": 55976.16, "rate": 0.225, "deduction": 7953.21 },
+      { "min_income": 55976.17, "max_income": null, "rate": 0.275, "deduction": 10752.02 }
+    ]
+  }
+  
