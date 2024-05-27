@@ -18,16 +18,21 @@ fn main() {
             .long("interactive")
             .help("Run in interactive mode")
             .action(clap::ArgAction::SetTrue))
+        .arg(Arg::new("detailed")
+            .short('d')
+            .long("detailed")
+            .help("Provides detailed information about each tax bracket")
+            .action(clap::ArgAction::SetTrue))
         .get_matches();
 
     if matches.get_flag("interactive") {
-        run_interactive();
+        run_interactive(matches.get_flag("detailed"));
     } else {
         println!("Use the --interactive option to run the program in interactive mode.");
     }
 }
 
-fn run_interactive() {
+fn run_interactive(detailed: bool) {
     println!("This program calculates your Brazilian Income Tax based on your annual income, total deductions, and total tax paid.");
 
     let annual_income = prompt_float("Enter your annual income (e.g., 50000.00): ");
@@ -67,6 +72,10 @@ fn run_interactive() {
     } else {
         println!("You will be refunded {:.2} using the Simplified Model.", -difference_simplified);
     }
+
+    if detailed {
+        print_detailed_information(&user_input, &tax_brackets);
+    }
 }
 
 fn prompt_float(prompt: &str) -> f64 {
@@ -81,5 +90,22 @@ fn prompt_float(prompt: &str) -> f64 {
             Ok(value) => return value,
             Err(_) => println!("Invalid input. Please enter a number."),
         }
+    }
+}
+
+fn print_detailed_information(user_input: &UserInput, tax_brackets: &TaxBrackets) {
+    println!("\nDetailed Tax Information:");
+    println!("Annual Income: {:.2}", user_input.annual_income);
+    println!("Total Deductions: {:.2}", user_input.deductions);
+    println!("Total Tax Paid: {:.2}", user_input.tax_paid);
+    println!("Tax Brackets:");
+    for bracket in &tax_brackets.brackets {
+        println!(
+            "  Min Income: {:.2}, Max Income: {:.2}, Rate: {:.2}%, Deduction: {:.2}",
+            bracket.min_income,
+            bracket.max_income.unwrap_or(f64::INFINITY),
+            bracket.rate * 100.0,
+            bracket.deduction
+        );
     }
 }
