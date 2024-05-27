@@ -1,7 +1,7 @@
 mod tax_data;
 
 use std::fs::File;
-use std::io::BufReader;
+use std::io::{self, BufReader, Write};
 use serde_json::from_reader;
 use clap::{Command, Arg};
 use tax_data::{TaxBrackets, UserInput};
@@ -11,23 +11,24 @@ fn main() {
         .version("1.0")
         .author("Your Name")
         .about("Calculates Brazilian Income Tax")
-        .arg(Arg::new("income")
-            .help("Annual income")
-            .required(true)
-            .value_parser(clap::value_parser!(f64)))
-        .arg(Arg::new("deductions")
-            .help("Total deductions")
-            .required(true)
-            .value_parser(clap::value_parser!(f64)))
-        .arg(Arg::new("tax_paid")
-            .help("Total tax paid during the year")
-            .required(true)
-            .value_parser(clap::value_parser!(f64)))
+        .arg(Arg::new("interactive")
+            .short('i')
+            .long("interactive")
+            .help("Run in interactive mode")
+            .action(clap::ArgAction::SetTrue))
         .get_matches();
 
-    let annual_income: f64 = *matches.get_one::<f64>("income").expect("Invalid income");
-    let deductions: f64 = *matches.get_one::<f64>("deductions").expect("Invalid deductions");
-    let tax_paid: f64 = *matches.get_one::<f64>("tax_paid").expect("Invalid tax paid");
+    if matches.get_flag("interactive") {
+        run_interactive();
+    } else {
+        println!("Use the --interactive option to run the program in interactive mode.");
+    }
+}
+
+fn run_interactive() {
+    let annual_income = prompt_float("Enter your annual income: ");
+    let deductions = prompt_float("Enter your total deductions: ");
+    let tax_paid = prompt_float("Enter the total tax paid during the year: ");
 
     let user_input = UserInput {
         annual_income,
@@ -61,6 +62,21 @@ fn main() {
         println!("You need to pay {:.2} more using the Simplified Model.", difference_simplified);
     } else {
         println!("You will be refunded {:.2} using the Simplified Model.", -difference_simplified);
+    }
+}
+
+fn prompt_float(prompt: &str) -> f64 {
+    loop {
+        print!("{}", prompt);
+        io::stdout().flush().unwrap();
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).expect("Failed to read line");
+
+        match input.trim().parse::<f64>() {
+            Ok(value) => return value,
+            Err(_) => println!("Invalid input. Please enter a number."),
+        }
     }
 }
 
