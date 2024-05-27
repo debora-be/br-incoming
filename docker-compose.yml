@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  br_income_tax:
+    build: .
+    container_name: br_income_tax_app
+    stdin_open: true 
+    tty: true       
